@@ -1,7 +1,6 @@
 'use strict';
 
 let articles = [];
-
 // COMMENT: What is the purpose of the following function? Why is its name capitalized? Explain the context of "this" within the function. What does "rawDataObj" represent?
 // PUT YOUR RESPONSE HERE
 
@@ -14,29 +13,25 @@ function Article (rawDataObj) {
   this.authorUrl = rawDataObj.authorUrl;
   this.publishedOn = rawDataObj.publishedOn;
   this.body = rawDataObj.body;
- 
 }
 
 Article.prototype.toHtml = function() {
   // COMMENT: What is the benefit of cloning the article? (see the jQuery docs)
   // The benefit of cloning the article is that we can add whole articles rather than just pieces of the article.
 
-  let $newArticle = $('article.template').clone();
+  let $newArticle = $('.template').clone();
   /* TODO: This cloned article still has a class of template. In our modules.css stylesheet, we should give all elements with a class of template a display of none so that our template does not display in the browser. But, we also need to make sure we're not accidentally hiding our cloned article. */
-
+  $newArticle.removeClass('template');
   if (!this.publishedOn) $newArticle.addClass('draft');
   $newArticle.attr('data-category', this.category);
 
-  $newArticle.append($('h2').html(this.title));
-  $newArticle.append($('h3').html(this.author));
-  $newArticle.append($('h4').html(this.publishedOn));
-  $newArticle.append($('p').html(this.body));
-  $newArticle.append($('p').html(this.authorUrl));
-  
-  
+  $('.template address').text(this.author);
+  $('.template a').text(this.authorUrl);
+  $('.template h1').text(this.title);
+  $('.template .article-body').html(this.body);
+  $('.template time').attr(this.publishedOn);
 
-  /* TODO: Now use jQuery traversal and setter methods to fill in the rest of the current template clone with values of the properties of this particular A
-  rticle instance.
+  /* TODO: Now use jQuery traversal and setter methods to fill in the rest of the current template clone with values of the properties of this particular Article instance.
     We need to fill in:
       1. author name,
       2. author url,
@@ -45,7 +40,7 @@ Article.prototype.toHtml = function() {
       5. publication date. */
 
   // REVIEW: Display the date as a relative number of 'days ago'
-  $newArticle.find('time').html('about ' + parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000) + ' days ago');
+  $newArticle.find('time').html(`${this.publishedOn} about ${parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000)} days ago`);
   $newArticle.append('<hr>');
   return $newArticle;
 };
@@ -57,10 +52,10 @@ rawData.sort(function(a,b) {
 
 // TODO: Refactor these for loops using the .forEach() array method.
 
-for(let i = 0; i < rawData.length; i++) {
-  articles.push(new Article(rawData[i]));
-}
+rawData.forEach( (rawData) => {
+  articles.push(new Article(rawData));
+});
 
-for(let i = 0; i < articles.length; i++) {
-  $('#articles').append(articles[i].toHtml());
-}
+articles.forEach( (articles) => {
+  $('#articles').append(articles.toHtml());
+});
